@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup><Compile Include="SimpleMath.fs" /><Compile Include="Console.fs" /><Compile Include="GUI.fs" /><Compile Include="MazeGenerator.fs" /><Compile Include="Window.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>
