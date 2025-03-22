@@ -1,15 +1,17 @@
 module FpAssignments.GUI
-
 open System.Collections.Generic
 open SimpleMath
+open Colors
 
 type Anchor = TopLeft | TopCenter
+
 type DrawRect = {
     position: int * int
     dimensions: int * int
     anchor: Anchor
     pivot: Anchor
-    content: List<string>
+    content: List<List<char>>
+    colorMap: List<List<Color>>
 }
 
 let rectTopLeftPosition drawRect =
@@ -18,5 +20,5 @@ let rectTopLeftPosition drawRect =
         | TopLeft -> drawRect.position
         | TopCenter -> -(center width), 0
 
-let createDrawRect pivot anchor position dimensions (content: List<string>) = 
-    { position = position; dimensions = dimensions; anchor = anchor; pivot = pivot; content = content;}
+let createDrawRect pivot anchor position dimensions content colorMap= 
+    { position = position; dimensions = dimensions; anchor = anchor; pivot = pivot; content = content; colorMap = colorMap}

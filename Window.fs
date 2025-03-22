@@ -4,7 +4,7 @@ open System.Threading
 open System.Collections.Generic
 open Console
 open SimpleMath
-open FpAssignments.GUI
+open GUI
 
 type Window = private {
     width: int
@@ -23,6 +23,10 @@ let private writeWindowWrongSizeMessage window =
     writeText (x - firstLineOffset) y firstLine
     writeText (x - secondLineOffset) (y + 1) secondLine
 
+let private validateWindowSize window = 
+    let currentWidth, currentHeight = consoleSize ()
+    currentWidth = window.width && currentHeight = window.height
+
 let private rectAbsolutePosition window rect =
     let rectLocalTopLeftPosition = rectTopLeftPosition rect
     let x, y = rect.position
@@ -32,17 +36,16 @@ let private rectAbsolutePosition window rect =
         | TopCenter -> center window.width + x, y
     addTuples globalPosition rectLocalTopLeftPosition
 
-let private validateWindowSize window = 
-    let currentWidth, currentHeight = consoleSize ()
-    currentWidth = window.width && currentHeight = window.height
-
 let private drawRect window (rect: DrawRect) =
     let x, y = rectAbsolutePosition window rect
     let count = counter 0
+    setBackground rect.backgroundColor
+    setForeground rect.foregroundColor
     for line in rect.content do
         writeText x (y + count ()) line 
 
 let create x y fps =
+    hideCursor ()
     let sleepTime = fps |> double |> (/) 1000.0 |> roundToInt
     { width = x; height = y; sleepTime = sleepTime; content = List<DrawRect> ()}
 
@@ -55,7 +58,7 @@ let windowSize window =
 let rec mainLoop window : unit =
     Thread.Sleep window.sleepTime
     clear()
-
+    
     if not <| validateWindowSize window then
         writeWindowWrongSizeMessage window
         mainLoop window
