@@ -196,7 +196,7 @@ let generateRect window maze =
             let tile = 0 |> sides |> mazeTile node.nodeType
             for i = 0 to tile.Count - 1 do
                 lines.[y * 3 + i] <- lines.[y * 3 + i] + tile[i]
-    createDrawRect TopLeft TopLeft (0, 0) (windowSize window) lines black white
+    createDrawRect (0, 0) (windowSize window) lines black white
 
 let generateMaze window width height iterations = 
     let maze = { width = width; height = height; nodes = List<List<Node>>()}

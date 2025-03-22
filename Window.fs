@@ -27,17 +27,8 @@ let private validateWindowSize window =
     let currentWidth, currentHeight = consoleSize ()
     currentWidth = window.width && currentHeight = window.height
 
-let private rectAbsolutePosition window rect =
-    let rectLocalTopLeftPosition = rectTopLeftPosition rect
-    let x, y = rect.position
-    let globalPosition = 
-        match rect.anchor with
-        | TopLeft -> x, y
-        | TopCenter -> center window.width + x, y
-    addTuples globalPosition rectLocalTopLeftPosition
-
 let private drawRect window (rect: DrawRect) =
-    let x, y = rectAbsolutePosition window rect
+    let x, y = rect.position
     let count = counter 0
     setBackground rect.backgroundColor
     setForeground rect.foregroundColor
