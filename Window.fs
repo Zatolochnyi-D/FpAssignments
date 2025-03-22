@@ -6,7 +6,7 @@ open Console
 open SimpleMath
 open FpAssignments.GUI
 
-type Window = {
+type Window = private {
     width: int
     height: int
     sleepTime: int
@@ -23,22 +23,35 @@ let private writeWindowWrongSizeMessage window =
     writeText (x - firstLineOffset) y firstLine
     writeText (x - secondLineOffset) (y + 1) secondLine
 
-let transformCoordinatesToWindow window anchor (x: int) (y: int) =
-     match anchor with
+let private rectAbsolutePosition window rect =
+    let rectLocalTopLeftPosition = rectTopLeftPosition rect
+    let x, y = rect.position
+    let globalPosition = 
+        match rect.anchor with
         | TopLeft -> x, y
-        | TopCenter -> window.width / 2 + x, y
+        | TopCenter -> center window.width + x, y
+    addTuples globalPosition rectLocalTopLeftPosition
 
 let private validateWindowSize window = 
     let currentWidth, currentHeight = consoleSize ()
     currentWidth = window.width && currentHeight = window.height
 
-let drawRect window (rect: DrawRect) =
-    // let anchorX, anchorY = transformCoordinatesToWindow window rect.anchor rect.x rect.y
-    let x, y = rect.position
+let private drawRect window (rect: DrawRect) =
+    let x, y = rectAbsolutePosition window rect
     let count = counter 0
     for line in rect.content do
         writeText x (y + count ()) line 
-        
+
+let create x y fps =
+    let sleepTime = fps |> double |> (/) 1000.0 |> roundToInt
+    { width = x; height = y; sleepTime = sleepTime; content = List<DrawRect> ()}
+
+let addContent window drawRect = 
+    window.content.Add drawRect
+
+let windowSize window = 
+    window.width, window.height
+
 let rec mainLoop window : unit =
     Thread.Sleep window.sleepTime
     clear()
@@ -50,7 +63,3 @@ let rec mainLoop window : unit =
         for rect in window.content do
             drawRect window rect
         mainLoop window
-
-let create x y fps =
-    let sleepTime = fps |> double |> (/) 1000.0 |> roundToInt
-    { width = x; height = y; sleepTime = sleepTime; content = List<DrawRect> ()}

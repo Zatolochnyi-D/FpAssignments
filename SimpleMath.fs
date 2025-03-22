@@ -23,3 +23,8 @@ let sum () =
         previousSum <- sum
         sum <- sum + addition
         previousSum
+
+let addTuples a b =
+    let x1, y1 = a
+    let x2, y2 = b
+    x1 + x2, y1 + y2

@@ -5,6 +5,7 @@ open System.Collections.Generic
 open System.Linq
 open SimpleMath
 open GUI
+open Window
 
 type Node = { x: int; y: int; neighbors: List<Node> }
 type Maze = { width: int; height: int; nodes: List<List<Node>> }
@@ -17,7 +18,7 @@ let randomDirection maze (random: Random) x y =
     if y = maze.height - 1 |> not then allowedDirections.Add (0, 1) 
     allowedDirections.[random.Next allowedDirections.Count]
 
-let mazeBase maze = 
+let fillBaseMaze maze = 
     for _ = 0 to maze.height - 1 do  
         maze.nodes.Add (List<Node>())
     maze.nodes.[0].Add { x = 0; y = 0; neighbors = List<Node> () }
@@ -32,21 +33,22 @@ let mazeBase maze =
             maze.nodes.[y].Add node
     maze
 
-let randomizedMaze iterations maze =
+let randomizeMaze iterations maze =
     let r = Random ()
-    let mutable currentRootX, currentRootY = 0, 0
-    for _ = 0 to iterations - 1 do
-        let shiftX, shiftY = randomDirection maze r currentRootX currentRootY
-        let x, y = currentRootX + shiftX, currentRootY + shiftY
-        let newRoot = maze.nodes.[y].[x]
-        newRoot.neighbors.Clear ()
-        let oldRoot = maze.nodes.[currentRootY].[currentRootX]
-        oldRoot.neighbors.Add newRoot
-        currentRootX <- x
-        currentRootY <- y
-    maze
+    let rec recursiveRandomizer iterations currentInteration maze rootX rootY =
+        if currentInteration <> iterations then
+            let shiftX, shiftY = randomDirection maze r rootX rootY
+            let x, y = rootX + shiftX, rootY + shiftY
+            let newRoot = maze.nodes.[y].[x]
+            newRoot.neighbors.Clear ()
+            let oldRoot = maze.nodes.[rootY].[rootX]
+            oldRoot.neighbors.Add newRoot
+            recursiveRandomizer iterations (currentInteration + 1) maze x y
+        else
+            maze
+    recursiveRandomizer iterations 0 maze 0 0
 
-let connectedMaze maze = 
+let createBothSidesConnections maze = 
     for line in maze.nodes do
         for node in line do
             for neighbor in node.neighbors do
@@ -126,7 +128,7 @@ let mazeTile index =
                     result.Add "###"
                     result
 
-let generateRects maze =
+let generateRect (window: Window) maze =
     let lines = List<string> ()
     for _ in maze.nodes do
         lines.Add ""
@@ -149,9 +151,9 @@ let generateRects maze =
             let tile = 0 |> sides |> mazeTile
             for i = 0 to tile.Count - 1 do
                 lines.[y * 3 + i] <- lines.[y * 3 + i] + tile[i]
-    createDrawRect TopCenter TopCenter (0, 0) lines
+    createDrawRect TopLeft TopLeft (0, 0) (windowSize window) lines
 
-let generateMaze width height iterations = 
+let generateMaze window width height iterations = 
     let maze = { width = width; height = height; nodes = List<List<Node>>()}
-    mazeBase maze |> randomizedMaze iterations |> connectedMaze |> generateRects
+    fillBaseMaze maze |> randomizeMaze iterations |> createBothSidesConnections |> generateRect window
             
