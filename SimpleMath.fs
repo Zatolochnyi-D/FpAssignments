@@ -2,6 +2,8 @@ module FpAssignments.SimpleMath
 
 open System
 
+type Vector = { x: int; y: int }
+
 let roundToInt (x: double) =
     x |> Math.Round |> int
 

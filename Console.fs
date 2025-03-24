@@ -1,9 +1,14 @@
 module FpAssignments.Console
 open System
-open Colors
 
 let hideCursor () =
     Console.CursorVisible <- false
+
+let preventInputPrinting () = 
+    async {
+        while true do 
+            Console.ReadKey true |> ignore
+    } |> Async.Start
 
 let consoleSize () =
     Console.WindowWidth, Console.WindowHeight
@@ -11,22 +16,11 @@ let consoleSize () =
 let clear () =
     Console.Clear ()
 
-let defaultBackgroundColor = Console.BackgroundColor
-let defaultForegroundColor = Console.ForegroundColor
-
 // Handle ArgumentOutOfRange
-let writeText x y (text: string) =
-    if x > -1 && y > -1 && x < Console.BufferWidth && y < Console.BufferHeight then
-        Console.SetCursorPosition (x, y)
-        Console.Write text
-    else 
-        Console.SetCursorPosition (0, 0)
-        let width, height = consoleSize ()
-        for _ = 0 to width * height do
-            Console.Write "X"
+let writeString x y (text: string) =
+    Console.SetCursorPosition (x, y)
+    Console.Write text
 
-let write x y (string: string) fgColor bgColor =
+let writeChar x y (string: char) =
     Console.SetCursorPosition(x, y)
-    Console.BackgroundColor <- bgColor
-    Console.ForegroundColor <- fgColor
     Console.Write string

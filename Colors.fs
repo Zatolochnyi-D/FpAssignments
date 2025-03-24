@@ -3,7 +3,6 @@ open System
 
 type Color =
     | SingleColor of ConsoleColor
-    | DefaultColor of unit
 let black = SingleColor ConsoleColor.Black
 let darkBlue = SingleColor ConsoleColor.DarkBlue
 let darkGreen = SingleColor ConsoleColor.DarkGreen
@@ -20,4 +19,7 @@ let red = SingleColor ConsoleColor.Red
 let magenta = SingleColor ConsoleColor.Magenta
 let yellow = SingleColor ConsoleColor.Yellow
 let white = SingleColor ConsoleColor.White
-let defaultColor = DefaultColor ()
+
+let unpackColor color =
+    match color with
+        | SingleColor x -> x

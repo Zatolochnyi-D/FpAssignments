@@ -1,5 +1,6 @@
 ﻿module FpAssignments.Program
 
+open System
 open System.Collections.Generic
 open Window
 open GUI
@@ -14,6 +15,6 @@ open MazeGenerator
 [<EntryPoint>]
 let main args = 
     let window = create 120 45 30
-    addContent window (generateMaze window 40 15 100000)
     mainLoop window
+    // addContent window (generateMaze window 40 15 100000)
     0
