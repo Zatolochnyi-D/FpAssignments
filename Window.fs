@@ -9,7 +9,7 @@ type Window = private {
     dimensions: Vector
     sleepTime: int
     buffer: List<List<char>>
-    content: List<DrawRect>
+    content: List<Fragment>
 }
 
 let createEmptyBuffer dimensions =
@@ -25,7 +25,7 @@ let create width height fps =
     preventInputPrinting ()
     let sleepTime = fps |> double |> (/) 1000.0 |> roundToInt
     let dimensions = { x = width; y = height }
-    { dimensions = dimensions; sleepTime = sleepTime; buffer = createEmptyBuffer dimensions; content = List<DrawRect> ()}
+    { dimensions = dimensions; sleepTime = sleepTime; buffer = createEmptyBuffer dimensions; content = List<Fragment> ()}
 
 let clearBuffer window =
     for y = 0 to window.dimensions.y - 1 do
@@ -56,14 +56,12 @@ let rec mainLoop window : unit =
     clear ()
     clearBuffer window
 
-    // logic here. Listen to keys, fill the buffer.
     if validateWindowSize window then
         // common logic
-        drawBuffer window
-        mainLoop window
+        drawBuffer window    
     else 
         writeWindowWrongSizeMessage window
-        mainLoop window    
+    mainLoop window    
 
 // let private drawRect window rect =
 //     let x, y = rect.position

@@ -1,15 +1,14 @@
 module FpAssignments.GUI
 open System.Collections.Generic
-open Colors
 open SimpleMath
 
-type DrawRect = {
+type Fragment = {
     position: Vector
     dimensions: Vector
     content: List<List<char>>
 }
 
-let drawRectFromCharList x y (content: List<List<char>>) =
+let fragmentFromCharList x y (content: List<List<char>>) =
     let position = { x = x; y = y }
     let dimensions = { x = content.[0].Count; y = content.Count }
     { position = position; dimensions = dimensions; content = content }
