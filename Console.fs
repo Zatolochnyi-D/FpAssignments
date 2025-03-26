@@ -4,11 +4,16 @@ open System
 let hideCursor () =
     Console.CursorVisible <- false
 
-let preventInputPrinting () = 
+let keyReader () = 
+    let mutable key = ConsoleKey.None
     async {
         while true do 
-            Console.ReadKey true |> ignore
+            key <- (Console.ReadKey true).Key
     } |> Async.Start
+    fun () -> 
+        let result = key
+        key <- ConsoleKey.None
+        result
 
 let consoleSize () =
     Console.WindowWidth, Console.WindowHeight

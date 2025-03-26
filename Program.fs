@@ -6,15 +6,13 @@ open Window
 open GUI
 open MazeGenerator
 
-// let rect = 
-//     let content = List<string>()
-//     content.Add "0123456789"
-//     content.Add "    01    "
-//     createDrawRect TopCenter TopCenter (0, 1) (10, 2) content
-
 [<EntryPoint>]
 let main args = 
     let window = create 120 45 30
+
+    let exitBind = { key = ConsoleKey.Escape; func = fun () -> Environment.Exit 0 }
+    addBinding window exitBind
+
     mainLoop window
     // addContent window (generateMaze window 40 15 100000)
     0

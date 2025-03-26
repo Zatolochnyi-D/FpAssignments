@@ -6,12 +6,19 @@ open Console
 open SimpleMath
 open GUI
 
+type Binding = {
+    key: ConsoleKey
+    func: unit -> unit
+}
+
 type FragmentOrNothing = Fragment of Fragment | None of unit
 type Window = private {
     dimensions: Vector
     sleepTime: int
+    keyReader: unit -> ConsoleKey
     buffer: List<List<char>>
     content: List<Fragment>
+    bindings: List<Binding>
 }
 
 let createEmptyBuffer dimensions =
@@ -24,10 +31,22 @@ let createEmptyBuffer dimensions =
 
 let create width height fps =
     hideCursor ()
-    preventInputPrinting ()
     let sleepTime = fps |> double |> (/) 1000.0 |> roundToInt
     let dimensions = { x = width; y = height }
-    { dimensions = dimensions; sleepTime = sleepTime; buffer = createEmptyBuffer dimensions; content = List<Fragment> ()}
+    { 
+        dimensions = dimensions
+        sleepTime = sleepTime
+        keyReader = keyReader ()
+        buffer = createEmptyBuffer dimensions
+        content = List<Fragment> ()
+        bindings = List<Binding> ()
+    }
+
+let addFragment window fragment =
+    window.content.Add fragment
+
+let addBinding window binding =
+    window.bindings.Add binding
 
 let clearBuffer window =
     for y = 0 to window.dimensions.y - 1 do
@@ -38,9 +57,6 @@ let drawBuffer window =
     for y = 0 to window.dimensions.y - 1 do
         for x = 0 to window.dimensions.x - 1 do
             writeChar x y window.buffer.[y].[x]
-
-let addFragment window fragment =
-    window.content.Add fragment
 
 // TODO: handle fragment go outside of the buffer
 let writeFragmentToBuffer window fragment =
@@ -71,12 +87,13 @@ let rec mainLoop window : unit =
     Thread.Sleep window.sleepTime
     clear ()
     clearBuffer window
+    let key = window.keyReader ()
 
     if validateWindowSize window then
-        // common logic 
-        ()
-        // writeFragmentsToBuffer window
-        // drawBuffer window
+        for binding in window.bindings do
+            if key = binding.key then binding.func ()
+        writeFragmentsToBuffer window
+        drawBuffer window
     else 
         writeWindowWrongSizeMessage window
     mainLoop window    
