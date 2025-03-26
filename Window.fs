@@ -1,10 +1,12 @@
 module FpAssignments.Window
+open System
 open System.Threading
 open System.Collections.Generic
 open Console
 open SimpleMath
 open GUI
 
+type FragmentOrNothing = Fragment of Fragment | None of unit
 type Window = private {
     dimensions: Vector
     sleepTime: int
@@ -37,19 +39,33 @@ let drawBuffer window =
         for x = 0 to window.dimensions.x - 1 do
             writeChar x y window.buffer.[y].[x]
 
+let addFragment window fragment =
+    window.content.Add fragment
+
+// TODO: handle fragment go outside of the buffer
+let writeFragmentToBuffer window fragment =
+    let position = rectAbsolutePosition window.dimensions fragment.rect
+    for y = 0 to fragment.rect.dimensions.y - 1 do
+        for x = 0 to fragment.rect.dimensions.x - 1 do
+            window.buffer.[position.y + y].[position.x + x] <- fragment.content.[y].[x]
+
+let writeFragmentsToBuffer window =
+    for fragment in window.content do
+        writeFragmentToBuffer window fragment
+
 let validateWindowSize window = 
     let currentWidth, currentHeight = consoleSize ()
     currentWidth = window.dimensions.x && currentHeight = window.dimensions.y
 
 let writeWindowWrongSizeMessage window =
-    let width, height = consoleSize ()
-    let firstLine = $"Please, make console size {window.dimensions.x}x{window.dimensions.y}"
-    let secondLine = $"(Current: {width}x{height})"
-    let firstLineOffset = center firstLine.Length
-    let secondLineOffset = center secondLine.Length
-    let x, y = width / 2, height / 2
-    writeString (x - firstLineOffset) y firstLine
-    writeString (x - secondLineOffset) (y + 1) secondLine
+    let consoleDimensions = consoleSize () |> vectorFromTuple
+    let content = $"Please, adjust console size to {window.dimensions.x}x{window.dimensions.y}\n\
+                    (Current: {consoleDimensions.x}x{consoleDimensions.y})"
+    let textBox = textBox Center Center Middle content
+    let pos = rectAbsolutePosition consoleDimensions textBox.fragment.rect
+    for y = 0 to textBox.fragment.content.Count - 1 do
+        for x = 0 to textBox.fragment.content.[y].Count - 1 do
+            writeChar (x + pos.x) (y + pos.y) textBox.fragment.content.[y].[x]
 
 let rec mainLoop window : unit =
     Thread.Sleep window.sleepTime
@@ -57,19 +73,10 @@ let rec mainLoop window : unit =
     clearBuffer window
 
     if validateWindowSize window then
-        // common logic
-        drawBuffer window    
+        // common logic 
+        ()
+        // writeFragmentsToBuffer window
+        // drawBuffer window
     else 
         writeWindowWrongSizeMessage window
     mainLoop window    
-
-// let private drawRect window rect =
-//     let x, y = rect.position
-//     let width, height = rect.dimensions
-//     for contentY = 0 to height - 1 do
-//         for contentX = 0 to width - 1 do
-//             let square = rect.content.[contentY].[contentX]
-//             writeChar (x + contentX) (y + contentY) square.char
-
-// let addContent window drawRect = 
-//     window.content.Add drawRect

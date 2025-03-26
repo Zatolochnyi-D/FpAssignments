@@ -1,11 +1,23 @@
 module FpAssignments.SimpleMath
 
 open System
+open System.Linq
 
-type Vector = { x: int; y: int }
+type Vector =
+    {
+        x: int
+        y: int
+    }
+    static member (+) (a, b) = { x = a.x + b.x; y = a.y + b.y }
+
+let vector x y = { x = x; y = y; }
+let vectorFromTuple (x, y) = vector x y
 
 let roundToInt (x: double) =
     x |> Math.Round |> int
+
+let floorToInt (x: double) =
+    x |> Math.Floor |> int
 
 let center sideSize =
     let shift = -1 + sideSize % 2
@@ -26,7 +38,5 @@ let sum () =
         sum <- sum + addition
         previousSum
 
-let addTuples a b =
-    let x1, y1 = a
-    let x2, y2 = b
-    x1 + x2, y1 + y2
+let charList (string: string) =
+    string.ToCharArray().ToList()
