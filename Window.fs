@@ -3,15 +3,13 @@ open System
 open System.Threading
 open System.Collections.Generic
 open Console
-open SimpleMath
-open GUI
+open FpAssignments.GUI.Rect
+open FpAssignments.GUI.Fragment
+open FpAssignments.GUI.TextBox
+open FpAssignments.Window.Binding
+open FpAssignments.Utilities
+open FpAssignments.Utilities.Vector
 
-type Binding = {
-    key: ConsoleKey
-    func: unit -> unit
-}
-
-type FragmentOrNothing = Fragment of Fragment | None of unit
 type Window = private {
     dimensions: Vector
     sleepTime: int
@@ -29,7 +27,7 @@ let createEmptyBuffer dimensions =
             buffer.[y].Add ' ';
     buffer
 
-let create width height fps =
+let createWindow width height fps =
     hideCursor ()
     let sleepTime = fps |> double |> (/) 1000.0 |> roundToInt
     let dimensions = { x = width; y = height }
